@@ -9,7 +9,7 @@ import java.net.Socket;
 public class Servidor {
     private final int PORT = 9876;
     private ServerSocket serverSocket;
-    private Socket clientSocket;
+    private Socket socket;
 
     // Constructor
     Servidor() throws IOException {
@@ -22,14 +22,50 @@ public class Servidor {
             System.out.println("Servidor iniciado. Esperando cliente...");
 
             // Iniciamos el socket del servidor y esperamos una conexión desde un cliente
-            clientSocket = serverSocket.accept();
-            System.out.println("¡Habemus conexión! Esperando nombre del cliente...");
+            socket = serverSocket.accept();
+            System.out.println("¡Habemus conexión!");
 
             // Abrimos flujo de entrada en el servidor desde el cliente
-            DataInputStream entradaServidor = new DataInputStream(clientSocket.getInputStream());
+            DataInputStream entradaServidor = new DataInputStream(socket.getInputStream());
             // Abrimos flujo de salida del servidor hacia el cliente
-            DataOutputStream salidaServidor = new DataOutputStream(clientSocket.getOutputStream());
+            DataOutputStream salidaServidor = new DataOutputStream(socket.getOutputStream());
+
+            // Servidor confirma conexión al cliente y recibe un ok
+            salidaServidor.writeUTF("¡Habemus conexión!");
+
+            // Recogemos las acciones que el usuario envía a través del menú del cliente
+            int accion = entradaServidor.readByte();
+            switch (accion) {
+                case 1: // Introducir una nueva tortuga
+                    salidaServidor.writeUTF("Has elegido la opción " + accion);
+                    clienteDice(String.valueOf(accion));
+                    break;
+                case 2: // Eliminar una tortuga
+                    clienteDice(String.valueOf(accion));
+                    salidaServidor.writeUTF("Has elegido la opción " + accion);
+                    break;
+                case 3: // Mostrar tortugas
+                    clienteDice(String.valueOf(accion));
+                    salidaServidor.writeUTF("Has elegido la opción " + accion);
+                    break;
+                case 4: // Iniciar carrera
+                    clienteDice(String.valueOf(accion));
+                    salidaServidor.writeUTF("Has elegido la opción " + accion);
+                    break;
+                case 5: // Salir
+                    // System.out.println("\nSalir.");
+                    clienteDice(String.valueOf(accion));
+                    salidaServidor.writeUTF("Has elegido la opción " + accion);
+                    break;
+            }
+            // Mensaje en el servidor cuando el cliente se desconecta
+            System.out.println("¡Cliente desconectado!");
         }
 
     }
+
+    private void clienteDice (String mensaje){
+        System.out.println("Cliente: " + mensaje);
+    }
+
 }
