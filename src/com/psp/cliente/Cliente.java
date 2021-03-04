@@ -10,7 +10,7 @@ public class Cliente {
     // Datos de conexión
     private final String HOST = "localhost";    // Dirección
     private final int PORT = 9876;              // Puerto
-    private final Socket socket;              // Socket
+    private final Socket socket;                // Socket
 
     public Cliente() throws IOException {
         socket = new Socket(HOST, PORT);
@@ -32,6 +32,15 @@ public class Cliente {
         servidorDice(entradaCliente.readUTF());
 
         // Mostar menú
+        mostrarMenu(entradaCliente, salidaCliente);
+
+    }
+
+    private void servidorDice (String mensaje){
+        System.out.println("Servidor: " + mensaje);
+    }
+
+    public void mostrarMenu(DataInputStream entradaCliente, DataOutputStream salidaCliente) throws IOException {
         int accion;
         do {
             System.out.println("\nMENÚ:\n" + "1. Introducir una nueva tortuga\n"
@@ -44,8 +53,9 @@ public class Cliente {
         } while (accion < 1 || accion > 5);
         switch (accion) {
             case 1: // Introducir una nueva tortuga
-                salidaCliente.writeByte(1);
-                servidorDice(entradaCliente.readUTF());
+                salidaCliente.writeByte(1);                  // Enviamos opción seleccionada
+                servidorDice(entradaCliente.readUTF());         // Servidor confirma opción elegida
+                introducirTortuga(entradaCliente, salidaCliente);
                 break;
             case 2: // Eliminar una tortuga
                 salidaCliente.writeByte(2);
@@ -53,7 +63,8 @@ public class Cliente {
                 break;
             case 3: // Mostrar tortugas
                 salidaCliente.writeByte(3);
-                servidorDice(entradaCliente.readUTF());
+                servidorDice(entradaCliente.readUTF());         // Servidor confirma creación de tortuga
+                mostrarTortugas(entradaCliente, salidaCliente);
                 break;
             case 4: // Iniciar carrera
                 salidaCliente.writeByte(4);
@@ -65,10 +76,22 @@ public class Cliente {
                 servidorDice(entradaCliente.readUTF());
                 break;
         }
-
     }
 
-    private void servidorDice (String mensaje){
-        System.out.println("Servidor: " + mensaje);
+    public void introducirTortuga(DataInputStream entradaCliente, DataOutputStream salidaCliente) throws IOException {
+        servidorDice(entradaCliente.readUTF());         // Servidor pregunta nombre de tortuga
+        salidaCliente.writeUTF(teclado.nextLine());     // Indicamos el nombre de la tortuga
+        servidorDice(entradaCliente.readUTF());         // Servidor pregunta dorsal
+        salidaCliente.writeByte(teclado.nextByte());    // Enviamos dorsal
+        teclado.nextLine();
+        servidorDice(entradaCliente.readUTF());         // Servidor confirma creación de tortuga
+        mostrarMenu(entradaCliente, salidaCliente);
+    }
+
+    public void mostrarTortugas(DataInputStream entradaCliente, DataOutputStream salidaCliente) throws IOException {
+        servidorDice(entradaCliente.readUTF());         // Servidor dice que mostrará las tortugas
+        servidorDice(entradaCliente.readUTF());         // Servidor envía lista de tortugas
+        mostrarMenu(entradaCliente, salidaCliente);
+        mostrarMenu(entradaCliente, salidaCliente);
     }
 }

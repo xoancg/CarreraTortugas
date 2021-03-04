@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Servidor {
     private final int PORT = 9876;
@@ -33,13 +34,24 @@ public class Servidor {
             // Servidor confirma conexión al cliente y recibe un ok
             salidaServidor.writeUTF("¡Habemus conexión!");
 
+            // Creamos el Array donde almacenar las tortugas
+            ArrayList<Tortuga> tortugas = new ArrayList<>();
+
             // Recogemos las acciones que el usuario envía a través del menú del cliente
             int accion = entradaServidor.readByte();
             switch (accion) {
                 case 1: // Introducir una nueva tortuga
                     salidaServidor.writeUTF("Has elegido la opción " + accion);
                     clienteDice(String.valueOf(accion));
+                    salidaServidor.writeUTF("Introduce el nombre de la nueva tortuga:");
+                    String nombre = entradaServidor.readUTF();
+                    salidaServidor.writeUTF("¿Dorsal?");
+                    int dorsal = entradaServidor.readByte();
+                    Tortuga tortuga = new Tortuga(nombre, dorsal);
+                    tortugas.add(tortuga);
+                    salidaServidor.writeUTF("Tortuga registrada correctamente.");
                     break;
+
                 case 2: // Eliminar una tortuga
                     clienteDice(String.valueOf(accion));
                     salidaServidor.writeUTF("Has elegido la opción " + accion);
@@ -47,6 +59,10 @@ public class Servidor {
                 case 3: // Mostrar tortugas
                     clienteDice(String.valueOf(accion));
                     salidaServidor.writeUTF("Has elegido la opción " + accion);
+                    salidaServidor.writeUTF("Tortugas registradas:");
+                    for (int i = 0; i < tortugas.size() ; i++) {
+                        salidaServidor.writeUTF(tortugas.get(i).toString());
+                    }
                     break;
                 case 4: // Iniciar carrera
                     clienteDice(String.valueOf(accion));
