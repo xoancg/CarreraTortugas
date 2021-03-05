@@ -59,30 +59,31 @@ public class Cliente {
         } while (accion < 1 || accion > 5);
         switch (accion) {
             case 1: // Introducir una nueva tortuga
-                salidaCliente.writeByte(1);                  // Enviamos opción seleccionada
-                servidorDice(entradaCliente.readUTF());         // Servidor confirma opción elegida
+                salidaCliente.writeByte(accion);                    // Enviamos opción seleccionada
+                servidorDice(entradaCliente.readUTF());             // Servidor confirma opción elegida
                 introducirTortuga(entradaCliente, salidaCliente);
                 break;
             case 2: // Eliminar una tortuga
-                salidaCliente.writeByte(2);
-                servidorDice(entradaCliente.readUTF());
+                salidaCliente.writeByte(accion);                    // Enviamos opción seleccionada
+                servidorDice(entradaCliente.readUTF());             // Servidor confirma opción elegida
+                eliminarTortuga(entradaCliente, salidaCliente);
                 break;
             case 3: // Mostrar tortugas
-                salidaCliente.writeByte(3);                  // Enviamos opción seleccionada
-                servidorDice(entradaCliente.readUTF());         // Servidor confirma creación de tortuga
-                servidorDice(entradaCliente.readUTF());         // otra cosa?
+                salidaCliente.writeByte(accion);                    // Enviamos opción seleccionada
+                servidorDice(entradaCliente.readUTF());             // Servidor confirma creación de tortuga
+                servidorDice(entradaCliente.readUTF());             // otra cosa? Ver!
                 mostrarTortugas(entradaCliente, salidaCliente);
                 break;
             case 4: // Iniciar carrera
-                salidaCliente.writeByte(4);                    // Enviamos opción seleccionada
-                servidorDice(entradaCliente.readUTF());           // Servidor confirma opción elegida
+                salidaCliente.writeByte(accion);                    // Enviamos opción seleccionada
+                servidorDice(entradaCliente.readUTF());             // Servidor confirma opción elegida
                 iniciarCarrera(entradaCliente, salidaCliente);
                 break;
             case 5: // Salir
                 // System.out.println("\nSalir.");
-                salidaCliente.writeByte(5);                 // Enviamos opción seleccionada
-                servidorDice(entradaCliente.readUTF());        // Servidor confirma opción elegida
-                servidorDice(entradaCliente.readUTF());        // Servidor confirma cierre de conexiones y del programa
+                salidaCliente.writeByte(accion);                    // Enviamos opción seleccionada
+                servidorDice(entradaCliente.readUTF());             // Servidor confirma opción elegida
+                servidorDice(entradaCliente.readUTF());             // Servidor confirma cierre de conexiones y del programa
                 socket.close();
                 break;
         }
@@ -109,6 +110,14 @@ public class Cliente {
     public void iniciarCarrera(DataInputStream entradaCliente, DataOutputStream salidaCliente) throws IOException {
 
         servidorDice(entradaCliente.readUTF());         // Servidor comunica el nombre de la tortuga ganadora
+        mostrarMenu(entradaCliente, salidaCliente);
+    }
+
+    public void eliminarTortuga(DataInputStream entradaCliente, DataOutputStream salidaCliente) throws IOException{
+        servidorDice(entradaCliente.readUTF());         // Servidor pregunta la posición de la tortuga a eliminar
+        salidaCliente.writeByte(teclado.nextInt());     // Cliente indica la posición de la tortuga
+        teclado.nextLine();                             // Limpiar buffer después de introducir un entero
+        servidorDice(entradaCliente.readUTF());         // Servidor confirma operación realizada
         mostrarMenu(entradaCliente, salidaCliente);
     }
 }

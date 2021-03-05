@@ -55,17 +55,12 @@ public class Servidor {
                         case 2: // Eliminar una tortuga
                             clienteDice(String.valueOf(accion));
                             salidaServidor.writeUTF("Has elegido la opción " + accion);
+                            eliminarTortuga(entradaServidor, salidaServidor);
                             break;
                         case 3: // Mostrar tortugas
                             clienteDice(String.valueOf(accion));
                             salidaServidor.writeUTF("Has elegido la opción " + accion);
-                            salidaServidor.writeUTF("Tortugas registradas:");
-                            salidaServidor.writeByte(tortugas.size());
-                            int posicion = 1;
-                            for (int i = 0; i < tortugas.size() ; i++) {
-                                salidaServidor.writeUTF(posicion + ". " + tortugas.get(i).toString());
-                                posicion++;
-                            }
+                            mostrarTortugas(entradaServidor, salidaServidor);
                             break;
                         case 4: // Iniciar carrera
                             clienteDice(String.valueOf(accion));
@@ -92,7 +87,7 @@ public class Servidor {
             } catch (Exception e){
                 serverSocket.close();
                 socket.close();
-                System.out.println("Conexiones cerradas a solicitud del usuario.");
+                System.out.println("Conexiones cerradas a solicitud del cliente.");
             }
 
             // Mensaje en el servidor cuando el cliente se desconecta
@@ -117,4 +112,27 @@ public class Servidor {
         salidaServidor.writeUTF("Tortuga registrada correctamente.");
     }
 
+    public void mostrarTortugas(DataInputStream entradaServidor, DataOutputStream salidaServidor) throws IOException {
+        salidaServidor.writeUTF("Tortugas registradas:");
+        salidaServidor.writeByte(tortugas.size());
+        int numero = 1;
+        for (int i = 0; i < tortugas.size() ; i++) {
+            salidaServidor.writeUTF(numero + ". " + tortugas.get(i).toString());
+            numero++;
+        }
+    }
+
+    public void eliminarTortuga (DataInputStream entradaServidor, DataOutputStream salidaServidor) throws IOException {
+        salidaServidor.writeUTF("Introduce la posición (desde 1) de la tortuga que quieres eliminar (o pulsa 0 para borrarlas todas):");
+        int posicion = entradaServidor.readByte();
+        System.out.println("Borrar posición:" + posicion);
+        if(posicion == 0) {
+            tortugas.clear();
+            salidaServidor.writeUTF("Se han borrado todas las tortugas.");
+        } else {
+            posicion = posicion - 1;
+            tortugas.remove(posicion);
+            salidaServidor.writeUTF("Se ha borrado la tortuga indicada en la posición " + posicion + 1);
+        }
+    }
 }
