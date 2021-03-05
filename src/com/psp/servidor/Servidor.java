@@ -18,7 +18,7 @@ public class Servidor {
     }
 
     // Método para iniciar el servidor
-    public void iniciarServidor() throws IOException {
+    public void iniciarServidor() throws IOException, InterruptedException {
         while(true){
             System.out.println("Servidor iniciado. Esperando cliente...");
 
@@ -37,43 +37,57 @@ public class Servidor {
             // Creamos el Array donde almacenar las tortugas
             ArrayList<Tortuga> tortugas = new ArrayList<>();
 
-            // Recogemos las acciones que el usuario envía a través del menú del cliente
             int accion = entradaServidor.readByte();
-            switch (accion) {
-                case 1: // Introducir una nueva tortuga
-                    salidaServidor.writeUTF("Has elegido la opción " + accion);
-                    clienteDice(String.valueOf(accion));
-                    salidaServidor.writeUTF("Introduce el nombre de la nueva tortuga:");
-                    String nombre = entradaServidor.readUTF();
-                    salidaServidor.writeUTF("¿Dorsal?");
-                    int dorsal = entradaServidor.readByte();
-                    Tortuga tortuga = new Tortuga(nombre, dorsal);
-                    tortugas.add(tortuga);
-                    salidaServidor.writeUTF("Tortuga registrada correctamente.");
-                    break;
 
-                case 2: // Eliminar una tortuga
-                    clienteDice(String.valueOf(accion));
-                    salidaServidor.writeUTF("Has elegido la opción " + accion);
-                    break;
-                case 3: // Mostrar tortugas
-                    clienteDice(String.valueOf(accion));
-                    salidaServidor.writeUTF("Has elegido la opción " + accion);
-                    salidaServidor.writeUTF("Tortugas registradas:");
-                    for (int i = 0; i < tortugas.size() ; i++) {
-                        salidaServidor.writeUTF(tortugas.get(i).toString());
-                    }
-                    break;
-                case 4: // Iniciar carrera
-                    clienteDice(String.valueOf(accion));
-                    salidaServidor.writeUTF("Has elegido la opción " + accion);
-                    break;
-                case 5: // Salir
-                    // System.out.println("\nSalir.");
-                    clienteDice(String.valueOf(accion));
-                    salidaServidor.writeUTF("Has elegido la opción " + accion);
-                    break;
-            }
+            do {
+                // Recogemos las acciones que el usuario envía a través del menú del cliente
+                switch (accion) {
+                    case 1: // Introducir una nueva tortuga
+                        salidaServidor.writeUTF("Has elegido la opción " + accion);
+                        clienteDice(String.valueOf(accion));
+                        salidaServidor.writeUTF("Introduce el nombre de la nueva tortuga:");
+                        String nombre = entradaServidor.readUTF();
+                        salidaServidor.writeUTF("¿Dorsal?");
+                        int dorsal = entradaServidor.readByte();
+                        Tortuga tortuga = new Tortuga(nombre, dorsal);
+                        tortugas.add(tortuga);
+                        salidaServidor.writeUTF("Tortuga registrada correctamente.");
+                        break;
+
+                    case 2: // Eliminar una tortuga
+                        clienteDice(String.valueOf(accion));
+                        salidaServidor.writeUTF("Has elegido la opción " + accion);
+                        break;
+                    case 3: // Mostrar tortugas
+                        clienteDice(String.valueOf(accion));
+                        salidaServidor.writeUTF("Has elegido la opción " + accion);
+                        salidaServidor.writeUTF("Tortugas registradas:");
+                        salidaServidor.writeByte(tortugas.size());
+                        for (int i = 0; i < tortugas.size() ; i++) {
+                            salidaServidor.writeUTF(tortugas.get(i).toString());
+                        }
+                        break;
+                    case 4: // Iniciar carrera
+                        clienteDice(String.valueOf(accion));
+                        salidaServidor.writeUTF("Has elegido la opción " + accion);
+                        // Metemos a las tortugas en la carrera
+                        Carrera carrera = new Carrera(tortugas);
+                        // Arrancamos
+                        carrera.iniciarCarrera();
+                        // Esperamos fin
+                        carrera.terminarCarrera();
+                        salidaServidor.writeUTF("Ha ganado la tortuga: " + carrera.getGanadora());
+                        break;
+                    case 5: // Salir
+                        // System.out.println("\nSalir.");
+                        clienteDice(String.valueOf(accion));
+                        salidaServidor.writeUTF("Has elegido la opción " + accion);
+                        break;
+                } // switch
+
+                accion = entradaServidor.readByte();
+            } while (accion != 5);
+
             // Mensaje en el servidor cuando el cliente se desconecta
             System.out.println("¡Cliente desconectado!");
         }

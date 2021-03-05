@@ -48,7 +48,10 @@ public class Cliente {
                     + "5. Salir\n");
 
             // Acción seleccionada por el usuario
-            accion = Integer.parseInt(teclado.nextLine()); // Consume salto de línea
+            accion = teclado.nextInt(); // Recuperas entero
+            teclado.nextLine(); // Eliminamos salto de línea
+            System.out.println("Acción: " + accion);
+            // Consume salto de línea
             // https://es.stackoverflow.com/questions/121684/problema-clase-scanner-en-java-al-introducir-varios-strings-como-variables
         } while (accion < 1 || accion > 5);
         switch (accion) {
@@ -64,6 +67,7 @@ public class Cliente {
             case 3: // Mostrar tortugas
                 salidaCliente.writeByte(3);
                 servidorDice(entradaCliente.readUTF());         // Servidor confirma creación de tortuga
+                servidorDice(entradaCliente.readUTF());         // otra cosa
                 mostrarTortugas(entradaCliente, salidaCliente);
                 break;
             case 4: // Iniciar carrera
@@ -82,16 +86,17 @@ public class Cliente {
         servidorDice(entradaCliente.readUTF());         // Servidor pregunta nombre de tortuga
         salidaCliente.writeUTF(teclado.nextLine());     // Indicamos el nombre de la tortuga
         servidorDice(entradaCliente.readUTF());         // Servidor pregunta dorsal
-        salidaCliente.writeByte(teclado.nextByte());    // Enviamos dorsal
-        teclado.nextLine();
+        salidaCliente.writeByte(teclado.nextInt());    // Enviamos dorsal
+        teclado.nextLine();                             // Limpiar buffer
         servidorDice(entradaCliente.readUTF());         // Servidor confirma creación de tortuga
         mostrarMenu(entradaCliente, salidaCliente);
     }
 
     public void mostrarTortugas(DataInputStream entradaCliente, DataOutputStream salidaCliente) throws IOException {
-        servidorDice(entradaCliente.readUTF());         // Servidor dice que mostrará las tortugas
-        servidorDice(entradaCliente.readUTF());         // Servidor envía lista de tortugas
-        mostrarMenu(entradaCliente, salidaCliente);
+        int numeroTortugas = entradaCliente.readByte();
+        for (int i = 0; i < numeroTortugas; i++) {
+            servidorDice(entradaCliente.readUTF());
+        }
         mostrarMenu(entradaCliente, salidaCliente);
     }
 }
