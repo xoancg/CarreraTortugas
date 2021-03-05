@@ -4,29 +4,29 @@ import java.util.Random;
 
 // Thread habilitamos tortuga pueda ser hilo
 public class Tortuga extends Thread {
-    private String nombreTortuga;
-    private int dorsalTortuga;
+    private String nombre;
+    private int dorsal;
     private Carrera carrera;
 
-    public Tortuga(String nombreTortuga, int dorsalTortuga) {
-        this.nombreTortuga = nombreTortuga;
-        this.dorsalTortuga = dorsalTortuga;
+    public Tortuga(String nombre, int dorsal) {
+        this.nombre = nombre;
+        this.dorsal = dorsal;
     }
 
-    public String getNombreTortuga() {
-        return nombreTortuga;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setNombreTortuga(String nombreTortuga) {
-        this.nombreTortuga = nombreTortuga;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-    public int getDorsalTortuga() {
-        return dorsalTortuga;
+    public int getDorsal() {
+        return dorsal;
     }
 
-    public void setDorsalTortuga(int dorsalTortuga) {
-        this.dorsalTortuga = dorsalTortuga;
+    public void setDorsal(int dorsal) {
+        this.dorsal = dorsal;
     }
 
     public void setCarrera(Carrera carrera) {
@@ -35,9 +35,8 @@ public class Tortuga extends Thread {
 
     @Override
     public String toString() {
-        return "Tortuga{" +
-                "nombreTortuga='" + nombreTortuga + '\'' +
-                ", dorsalTortuga='" + dorsalTortuga + '\'' +
+        return "{nombre='" + nombre + '\'' +
+                ", dorsal='" + dorsal + '\'' +
                 '}';
     }
 

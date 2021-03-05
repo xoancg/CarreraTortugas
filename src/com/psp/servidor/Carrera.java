@@ -29,7 +29,7 @@ public class Carrera {
         if(ganadora == null) {
             ganadora = tortuga;
         } else {
-            System.out.println("Has perdido");
+            System.out.println("Has perdido, " + tortuga.getNombre());
         }
 
     }

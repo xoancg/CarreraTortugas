@@ -34,6 +34,9 @@ public class Cliente {
         // Mostar menú
         mostrarMenu(entradaCliente, salidaCliente);
 
+        // Fin de programa
+        System.out.println("Programa finalizado. ¡Hasta pronto!");
+
     }
 
     private void servidorDice (String mensaje){
@@ -65,19 +68,22 @@ public class Cliente {
                 servidorDice(entradaCliente.readUTF());
                 break;
             case 3: // Mostrar tortugas
-                salidaCliente.writeByte(3);
+                salidaCliente.writeByte(3);                  // Enviamos opción seleccionada
                 servidorDice(entradaCliente.readUTF());         // Servidor confirma creación de tortuga
-                servidorDice(entradaCliente.readUTF());         // otra cosa
+                servidorDice(entradaCliente.readUTF());         // otra cosa?
                 mostrarTortugas(entradaCliente, salidaCliente);
                 break;
             case 4: // Iniciar carrera
-                salidaCliente.writeByte(4);
-                servidorDice(entradaCliente.readUTF());
+                salidaCliente.writeByte(4);                    // Enviamos opción seleccionada
+                servidorDice(entradaCliente.readUTF());           // Servidor confirma opción elegida
+                iniciarCarrera(entradaCliente, salidaCliente);
                 break;
             case 5: // Salir
                 // System.out.println("\nSalir.");
-                salidaCliente.writeByte(5);
-                servidorDice(entradaCliente.readUTF());
+                salidaCliente.writeByte(5);                 // Enviamos opción seleccionada
+                servidorDice(entradaCliente.readUTF());        // Servidor confirma opción elegida
+                servidorDice(entradaCliente.readUTF());        // Servidor confirma cierre de conexiones y del programa
+                socket.close();
                 break;
         }
     }
@@ -97,6 +103,12 @@ public class Cliente {
         for (int i = 0; i < numeroTortugas; i++) {
             servidorDice(entradaCliente.readUTF());
         }
+        mostrarMenu(entradaCliente, salidaCliente);
+    }
+
+    public void iniciarCarrera(DataInputStream entradaCliente, DataOutputStream salidaCliente) throws IOException {
+
+        servidorDice(entradaCliente.readUTF());         // Servidor comunica el nombre de la tortuga ganadora
         mostrarMenu(entradaCliente, salidaCliente);
     }
 }
