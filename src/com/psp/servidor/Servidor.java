@@ -1,5 +1,7 @@
 package com.psp.servidor;
 
+import com.psp.cliente.Main;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -16,6 +18,9 @@ public class Servidor {
     Servidor() throws IOException {
         serverSocket = new ServerSocket(PORT); // Socket servidor
     }
+
+    // Creamos el Array donde almacenar las tortugas
+    ArrayList<Tortuga> tortugas = new ArrayList<>();
 
     // Método para iniciar el servidor
     public void iniciarServidor() throws IOException, InterruptedException {
@@ -34,9 +39,6 @@ public class Servidor {
             // Servidor confirma conexión al cliente y recibe un ok
             salidaServidor.writeUTF("¡Habemus conexión!");
 
-            // Creamos el Array donde almacenar las tortugas
-            ArrayList<Tortuga> tortugas = new ArrayList<>();
-
             int accion = entradaServidor.readByte();
 
             try {
@@ -47,13 +49,7 @@ public class Servidor {
                         case 1: // Introducir una nueva tortuga
                             salidaServidor.writeUTF("Has elegido la opción " + accion);
                             clienteDice(String.valueOf(accion));
-                            salidaServidor.writeUTF("Introduce el nombre de la nueva tortuga:");
-                            String nombre = entradaServidor.readUTF();
-                            salidaServidor.writeUTF("¿Dorsal?");
-                            int dorsal = entradaServidor.readByte();
-                            Tortuga tortuga = new Tortuga(nombre, dorsal);
-                            tortugas.add(tortuga);
-                            salidaServidor.writeUTF("Tortuga registrada correctamente.");
+                            introducirTortuga(entradaServidor, salidaServidor);
                             break;
 
                         case 2: // Eliminar una tortuga
@@ -83,7 +79,6 @@ public class Servidor {
                             salidaServidor.writeUTF("Ha ganado la tortuga: " + carrera.getGanadora());
                             break;
                         case 5: // Salir
-                            // System.out.println("\nSalir.");
                             clienteDice(String.valueOf(accion));
                             salidaServidor.writeUTF("Has elegido la opción " + accion);
                             salidaServidor.writeUTF("Cerrando conexión...");
@@ -110,6 +105,16 @@ public class Servidor {
 
     private void clienteDice (String mensaje){
         System.out.println("Cliente: " + mensaje);
+    }
+
+    public void introducirTortuga(DataInputStream entradaServidor, DataOutputStream salidaServidor) throws IOException {
+        salidaServidor.writeUTF("Introduce el nombre de la nueva tortuga:");
+        String nombre = entradaServidor.readUTF();
+        salidaServidor.writeUTF("¿Dorsal?");
+        int dorsal = entradaServidor.readByte();
+        Tortuga tortuga = new Tortuga(nombre, dorsal);
+        tortugas.add(tortuga);
+        salidaServidor.writeUTF("Tortuga registrada correctamente.");
     }
 
 }
